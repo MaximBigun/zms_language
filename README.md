@@ -1,3 +1,5 @@
+UPD: Добавлена Украинская локализация
+
 # ТЕКУЩАЯ ВЕРСИЯ ЕЩЕ В ПРОЦЕССЕ ТЕСТИРОВАНИЯ. КАК БУДЕТ ПРОЙДЕНА ПРОВЕРКА, ЭТА НАДПИСЬ БУДЕТ УДАЛЕНА
 
 
@@ -24,11 +26,7 @@
 
 
 
-## публикация изменений
 
-```powershell
-cd "H:\work\zms_language"; git add -A; git commit -m "update localization patch"; git push origin main
-```
 
 ## восстановление
 
@@ -54,11 +52,7 @@ from the clean Steam `resources\data_0.pak` file and a compact overlay set.
 
 The PAK build runs once during installation and may take several minutes.
 
-## Publishing Changes
 
-```powershell
-cd “H:\work\zms_language”; git add -A; git commit -m “update localization patch”; git push origin main
-```
 
 ## Restoring
 
