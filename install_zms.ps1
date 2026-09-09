@@ -32,7 +32,7 @@ $builder = Join-Path $scriptdir "build_overlay_pak.ps1"
 $existingCleanExe = Join-Path $systemdir "zanthp_zms_original.exe"
 
 Write-Host ""
-Write-Host "zanzarah zms language patch - english + russian"
+Write-Host "zanzarah zms language patch - english + russian + ukrainian"
 Write-Host ""
 
 foreach ($required in @($exe, $pak, $payloadexe, $payloaddll, $builder)) {
@@ -88,7 +88,7 @@ if ((hash $enPak) -ne $cleanPakHash) { throw "invalid english pak backup: $enPak
 
 log "installing language payload..."
 Copy-Item -Path (Join-Path $scriptdir "localization\en\*") -Destination (New-Item -ItemType Directory -Force -Path (Join-Path $localizationdir "en")) -Force
-Copy-Item -Path (Join-Path $scriptdir "localization\ru\*") -Destination (New-Item -ItemType Directory -Force -Path (Join-Path $localizationdir "ru")) -Force
+Copy-Item -Path (Join-Path $scriptdir "localization\ru\*") -Destination (New-Item -ItemType Directory -Force -Path (Join-Path $localizationdir "ru")) -Recurse -Force`r`nCopy-Item -Path (Join-Path $scriptdir "localization\uk\*") -Destination (New-Item -ItemType Directory -Force -Path (Join-Path $localizationdir "uk")) -Recurse -Force
 $overlay = Join-Path $scriptdir "localization\overlay_ru"
 if (!(Test-Path -LiteralPath $overlay -PathType Container)) { throw "russian overlay not found: $overlay" }
 & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $builder -basepak $enPak -overlaydir $overlay -output (Join-Path $pakdir "ru.pak")
@@ -102,4 +102,5 @@ Set-Content -LiteralPath (Join-Path $localizationdir "zms_language.ini") -Encodi
 
 Write-Host ""
 log "installed successfully; active language: english"
-Write-Host "Start with Steam, open Settings, select Russian, and press Apply."
+Write-Host "Start with Steam, open Settings, select English, Russian, or Ukrainian, and press Apply."
+
