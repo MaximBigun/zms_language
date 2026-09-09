@@ -1,5 +1,5 @@
 param(
-    [ValidateSet("en", "ru")][string]$language,
+    [ValidateSet("en", "ru", "uk")][string]$language,
     [int]$processid
 )
 
@@ -8,11 +8,18 @@ $localizationdir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $gameroot = Split-Path -Parent $localizationdir
 $sourcefbs = Join-Path $localizationdir $language
 $sourcepak = Join-Path $localizationdir "pak\$language.pak"
+if ($language -eq "uk" -and !(Test-Path -LiteralPath $sourcepak -PathType Leaf)) { $sourcepak = Join-Path $localizationdir "pak\ru.pak" }
 $datadir = Join-Path $gameroot "data"
 $backupfbs = Join-Path $localizationdir "steam_en"
 $targetpak = Join-Path $gameroot "resources\data_0.pak"
 $launcher = Join-Path $gameroot "system\zanthp.exe"
 $logfile = Join-Path $localizationdir "zms_language.log"
+$audioSource = Join-Path $localizationdir "$language\audio\SFX\VOICES\AMY"
+$audioTarget = Join-Path $gameroot "resources\audio\SFX\VOICES\AMY"
+$audioBackup = Join-Path $localizationdir "audio_original\SFX\VOICES\AMY"
+$videoSource = Join-Path $localizationdir "$language\video"
+$videoTarget = Join-Path $gameroot "resources\Videos"
+$videoBackup = Join-Path $localizationdir "video_original"
 
 try {
     Set-Content -LiteralPath (Join-Path $localizationdir "zms_language.ini") -Encoding ascii -Value "[zms]`r`nlanguage=$language"
@@ -30,6 +37,30 @@ try {
     }
     if ($language -eq "en") { Copy-Item -Path (Join-Path $backupfbs "*.fbs") -Destination $datadir -Force }
     else { Copy-Item -Path (Join-Path $sourcefbs "*.fbs") -Destination $datadir -Force }
+    if (!(Test-Path -LiteralPath $audioBackup)) { New-Item -ItemType Directory -Path $audioBackup -Force | Out-Null }
+    if (!(Test-Path -LiteralPath $audioTarget)) { New-Item -ItemType Directory -Path $audioTarget -Force | Out-Null }
+    if (Test-Path -LiteralPath $audioTarget) {
+        foreach ($wav in Get-ChildItem -LiteralPath $audioTarget -File -Include *.wav,*.WAV) {
+            $original = Join-Path $audioBackup $wav.Name
+            if (!(Test-Path -LiteralPath $original)) { Copy-Item -LiteralPath $wav.FullName -Destination $original -Force }
+        }
+    }
+    if ($language -eq "uk" -and (Test-Path -LiteralPath $audioSource)) {
+        Copy-Item -Path (Join-Path $audioSource "*") -Destination $audioTarget -Force
+    } elseif (Test-Path -LiteralPath $audioBackup) {
+        Copy-Item -Path (Join-Path $audioBackup "*") -Destination $audioTarget -Force
+    }
+    if (!(Test-Path -LiteralPath $videoBackup)) { New-Item -ItemType Directory -Path $videoBackup -Force | Out-Null }
+    if (!(Test-Path -LiteralPath $videoTarget)) { New-Item -ItemType Directory -Path $videoTarget -Force | Out-Null }
+    foreach ($vid in Get-ChildItem -LiteralPath $videoTarget -File -ErrorAction SilentlyContinue) {
+        $original = Join-Path $videoBackup $vid.Name
+        if (!(Test-Path -LiteralPath $original)) { Copy-Item -LiteralPath $vid.FullName -Destination $original -Force }
+    }
+    if (Test-Path -LiteralPath $videoSource) {
+        Copy-Item -Path (Join-Path $videoSource "*") -Destination $videoTarget -Recurse -Force
+    } elseif (Test-Path -LiteralPath $videoBackup) {
+        Copy-Item -Path (Join-Path $videoBackup "*") -Destination $videoTarget -Force
+    }
     $copied = $false
     for ($n = 0; $n -lt 30 -and !$copied; $n++) {
         try { Copy-Item -LiteralPath $sourcepak -Destination $targetpak -Force; $copied = $true }
