@@ -87,7 +87,7 @@ if (!(Test-Path -LiteralPath $enPak)) {
 if ((hash $enPak) -ne $cleanPakHash) { throw "invalid english pak backup: $enPak" }
 
 log "installing language payload..."
-Copy-Item -Path (Join-Path $scriptdir "localization\en\*") -Destination (New-Item -ItemType Directory -Force -Path (Join-Path $localizationdir "en")) -Force
+Copy-Item -Path (Join-Path $scriptdir "localization\en\*") -Destination (New-Item -ItemType Directory -Force -Path (Join-Path $localizationdir "en")) -Recurse -Force
 Copy-Item -Path (Join-Path $scriptdir "localization\ru\*") -Destination (New-Item -ItemType Directory -Force -Path (Join-Path $localizationdir "ru")) -Recurse -Force
 Copy-Item -Path (Join-Path $scriptdir "localization\uk\*") -Destination (New-Item -ItemType Directory -Force -Path (Join-Path $localizationdir "uk")) -Recurse -Force
 $overlay = Join-Path $scriptdir "localization\overlay_ru"

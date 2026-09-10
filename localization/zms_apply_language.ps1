@@ -45,9 +45,11 @@ try {
             if (!(Test-Path -LiteralPath $original)) { Copy-Item -LiteralPath $wav.FullName -Destination $original -Force }
         }
     }
-    if ($language -eq "uk" -and (Test-Path -LiteralPath $audioSource)) {
+    if (Test-Path -LiteralPath $audioSource) {
+        Remove-Item -LiteralPath (Join-Path $audioTarget '*') -Force -ErrorAction SilentlyContinue
         Copy-Item -Path (Join-Path $audioSource "*") -Destination $audioTarget -Force
     } elseif (Test-Path -LiteralPath $audioBackup) {
+        Remove-Item -LiteralPath (Join-Path $audioTarget '*') -Force -ErrorAction SilentlyContinue
         Copy-Item -Path (Join-Path $audioBackup "*") -Destination $audioTarget -Force
     }
     if (!(Test-Path -LiteralPath $videoBackup)) { New-Item -ItemType Directory -Path $videoBackup -Force | Out-Null }
@@ -57,8 +59,10 @@ try {
         if (!(Test-Path -LiteralPath $original)) { Copy-Item -LiteralPath $vid.FullName -Destination $original -Force }
     }
     if (Test-Path -LiteralPath $videoSource) {
+        Remove-Item -LiteralPath (Join-Path $videoTarget '*') -Force -ErrorAction SilentlyContinue
         Copy-Item -Path (Join-Path $videoSource "*") -Destination $videoTarget -Recurse -Force
     } elseif (Test-Path -LiteralPath $videoBackup) {
+        Remove-Item -LiteralPath (Join-Path $videoTarget '*') -Force -ErrorAction SilentlyContinue
         Copy-Item -Path (Join-Path $videoBackup "*") -Destination $videoTarget -Force
     }
     $copied = $false
